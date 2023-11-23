@@ -1,0 +1,68 @@
+﻿@model TestCRUD.Models.UpdateOrderViewModel
+
+
+<h1>Edit Order</h1>
+<form method="post" action="View" class="mb-5">
+    <div class="mb-3">
+        <label for="" class="form-label">ID Order</label>
+        <input type="number" class="form-control" asp-for="Id" readonly />
+    </div>
+    
+    <div class="mb-3">
+        <label for="" class="form-label">Number</label>
+        <input type="number" class="form-control" asp-for="Number" />
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Date</label>
+        <input type="date" class="form-control" asp-for="Date" />
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Provider</label>
+        <select id="providerDropdown" class="form-control" asp-for="ProviderId">
+            <option value="">Select Provider</option>
+            @foreach (var provider in ViewBag.Providers)
+            {
+                <option value="@provider.Id">@provider.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Provider ID</label>
+        <input type="text" class="form-control" asp-for="ProviderId" />
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Order Items Name</label>
+        <input type="text" class="form-control" asp-for="OrderItems[0].Name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Order Item Quantity</label>
+        <input type="text" class="form-control" asp-for="OrderItems[0].Quantity" />
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Order Item Unit</label>
+        <input type="text" class="form-control" asp-for="OrderItems[0].Unit" /> 
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+    <button type="submit" class="btn btn-danger" asp-action="Delete" asp-controller="Home">Delete</button>
+
+    <a asp-action="Index">Back to List</a>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI/tZ1oFYGF & Qg7bR6MwU1Z16d25IW1I40l + 2auE=" crossorigin="anonymous"></script>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#providerDropdown').change(function () {
+                $('#ProviderId').val($(this).val());
+            });
+        });
+    </script>
+}

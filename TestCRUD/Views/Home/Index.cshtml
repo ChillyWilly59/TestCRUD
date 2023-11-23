@@ -1,0 +1,100 @@
+﻿@using TestCRUD
+@model List<TestCRUD.Models.Domain.Order>
+
+<h1>Заказы</h1>
+
+<!-- Форма с фильтрами -->
+<form method="get" action="@Url.Action("Index", "Home")">
+    <label for="startDate">Начальная дата:</label>
+    <input type="date" id="startDate" name="startDate">
+
+    <label for="endDate">Конечная дата:</label>
+    <input type="date" id="endDate" name="endDate">
+
+    <label for="filter">Фильтр:</label>
+    <select id="filter" name="filter">
+        <option value="all">Все заказы</option>
+        <option value="inProgress">В процессе</option>
+        <option value="completed">Завершенные</option>
+    </select>
+
+    <button type="submit">Применить фильтр</button>
+</form>
+
+<table class="table">
+    <!-- Таблица заказов -->
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Номер</th>
+            <th>Дата</th>
+            <th>ID поставщика</th>
+            <th>Поставщик</th>
+            <th>Элементы заказа</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            bool showOrder = true;
+
+            // Дополнительные проверки для применения фильтров
+            if (!string.IsNullOrEmpty(Context.Request.Query["startDate"]))
+            {
+                // Проверка начальной даты
+                DateTime startDateFilter = DateTime.Parse(Context.Request.Query["startDate"]);
+                if (order.Date < startDateFilter)
+                {
+                    showOrder = false;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(Context.Request.Query["endDate"]))
+            {
+                // Проверка конечной даты
+                DateTime endDateFilter = DateTime.Parse(Context.Request.Query["endDate"]);
+                if (order.Date > endDateFilter)
+                {
+                    showOrder = false;
+                }
+            }
+
+
+            // Отображение заказа, если он соответствует всем условиям фильтрации
+            if (showOrder)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.Number</td>
+                    <td>@order.Date.ToShortDateString()</td>
+                    <td>@order.ProviderId</td>
+                    <td>@order.Provider.Name</td>
+                    <td>
+                        @if (order.OrderItems != null && order.OrderItems.Any())
+                        {
+                            <ul>
+                                @foreach (var orderItem in order.OrderItems)
+                                {
+                                    <li>
+                                        Продукт: @(orderItem.Name ?? "N/A")
+                                    </li>
+                                    <li>Количество: @orderItem.Quantity</li>
+                                    <li>Единица измерения: @(orderItem.Unit ?? "N/A")</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>Нет элементов заказа</p>
+                        }
+                    </td>
+                    <td><a href="Home/View/@order.Id">View</a></td>
+                </tr>
+            }
+        }
+    </tbody>
+
+</table>
+
+<a asp-action="Add">Создать новый заказ</a>
